@@ -1,0 +1,34 @@
+---
+# ---- Application ----
+app_name: LearnHub
+app_tagline: Online Learning Platform
+app_version: "1.0.0"
+app_env: production
+
+# ---- Common ----
+common_packages:
+  - git
+  - curl
+  - unzip
+  - htop
+
+# ---- Web tier ----
+web_root: /var/www/learnhub
+web_port: 80
+server_name: "_"
+
+# ---- Database tier ----
+db_name: learnhub_db
+db_user: learnhub_user
+# Demo value only. In real projects store this with: ansible-vault encrypt_string
+db_password: "LearnHub@2026"
+
+# ---- Monitoring ----
+node_exporter_port: 9100
+
+# ---- Sample course catalogue shown on the home page ----
+courses:
+  - { title: "Python for Beginners", level: "Beginner", hours: 24 }
+  - { title: "DevOps with Ansible",  level: "Intermediate", hours: 18 }
+  - { title: "Cloud Computing on AWS", level: "Intermediate", hours: 30 }
+  - { title: "Data Structures & Algorithms", level: "Advanced", hours: 40 }

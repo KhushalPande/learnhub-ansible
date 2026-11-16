@@ -1,0 +1,57 @@
+---
+# LearnHub - master playbook
+# Run:  ansible-playbook site.yml
+# Tags: common | web | db | monitoring | verify
+
+- name: Play 1 - Common baseline for all servers
+  hosts: learnhub
+  become: true
+  roles:
+    - role: common
+      tags: [common]
+
+- name: Play 2 - Web tier (Nginx + LearnHub site)
+  hosts: web
+  become: true
+  roles:
+    - role: webserver
+      tags: [web]
+
+- name: Play 3 - Database tier (MariaDB)
+  hosts: db
+  become: true
+  roles:
+    - role: database
+      tags: [db]
+
+- name: Play 4 - Monitoring (Prometheus node exporter)
+  hosts: monitoring
+  become: true
+  roles:
+    - role: monitoring
+      tags: [monitoring]
+
+- name: Play 5 - Post-deployment verification
+  hosts: web
+  become: false
+  tags: [verify]
+  tasks:
+    - name: Check the /health endpoint returns HTTP 200
+      ansible.builtin.uri:
+        url: "http://localhost:{{ web_port }}/health"
+        status_code: 200
+        return_content: true
+      register: health
+
+    - name: Check the home page contains the application name
+      ansible.builtin.uri:
+        url: "http://localhost:{{ web_port }}/"
+        return_content: true
+      register: home
+      failed_when: app_name not in home.content
+
+    - name: Show verification result
+      ansible.builtin.debug:
+        msg:
+          - "Health endpoint : {{ health.content | trim }}"
+          - "Home page       : OK ({{ app_name }} v{{ app_version }})"

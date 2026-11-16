@@ -1,0 +1,19 @@
+# Managed by Ansible - do not edit by hand
+server {
+    listen {{ web_port }} default_server;
+    server_name {{ server_name }};
+
+    root {{ web_root }};
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Health check endpoint used by load balancers / monitoring
+    location /health {
+        access_log off;
+        default_type text/plain;
+        return 200 "OK - {{ app_name }} {{ app_version }} is healthy\n";
+    }
+}
